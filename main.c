@@ -1,6 +1,7 @@
 #include "PQ.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <float.h>
 
 struct item {
@@ -47,17 +48,17 @@ void freeGraph(Graph *graph) {
 }
 
 // Função para reconstruir o caminho
-void printPath(int node, int *predecessor) {
+void printPath(int node, int *predecessor, FILE *out_file) {
     if (predecessor[node] == -1) {
-        printf("node_%d", node);
+        fprintf(out_file, "node_%d", node);
         return;
     }
-    printPath(predecessor[node], predecessor);
-    printf(" <- node_%d", node);
+    fprintf(out_file, "node_%d <- ", node);
+    printPath(predecessor[node], predecessor, out_file);
 }
 
 // Algoritmo de Dijkstra ajustado
-void dijkstra(Graph *graph, int source) {
+void dijkstra(Graph *graph, int source, FILE *out_file) {
     float *distances = malloc(graph->num_vertices * sizeof(float));
     int *visited = calloc(graph->num_vertices, sizeof(int));
     int *predecessor = malloc(graph->num_vertices * sizeof(int));
@@ -71,6 +72,7 @@ void dijkstra(Graph *graph, int source) {
 
     // Criar fila de prioridade
     PQ *pq = PQ_create(graph->num_vertices);
+
     Item *first = malloc(sizeof(Item));
     first->distance = 0.0;
     first->node = source;
@@ -107,7 +109,8 @@ void dijkstra(Graph *graph, int source) {
     // Ordenar os nós pela distância
     for (int i = 0; i < graph->num_vertices - 1; i++) {
         for (int j = i + 1; j < graph->num_vertices; j++) {
-            if (distances[order[i]] > distances[order[j]]) {
+            if (distances[order[i]] > distances[order[j]] || 
+               (distances[order[i]] == distances[order[j]] && order[i] > order[j])) {
                 int temp = order[i];
                 order[i] = order[j];
                 order[j] = temp;
@@ -118,9 +121,9 @@ void dijkstra(Graph *graph, int source) {
     // Exibir resultados
     for (int i = 0; i < graph->num_vertices; i++) {
         int node = order[i];
-        printf("SHORTEST PATH TO node_%d: ", node);
-        printPath(node, predecessor);
-        printf(" (Distance: %.2f)\n", distances[node]);
+        fprintf(out_file, "SHORTEST PATH TO node_%d: ", node);
+        printPath(node, predecessor, out_file);
+        fprintf(out_file, " (Distance: %.2f)\n", distances[node]);
     }
 
     free(distances);
@@ -132,202 +135,64 @@ void dijkstra(Graph *graph, int source) {
 
 // Função principal
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Uso: %s <arquivo de entrada>\n", argv[0]);
+    if (argc < 3) {
+        printf("Uso: %s <arquivo de entrada> <arquivo de saída>\n", argv[0]);
         return 1;
     }
 
-    char *arquivo = argv[1];
-    FILE *file = fopen(arquivo, "r");
-    if (!file) {
-        perror("Erro ao abrir o arquivo");
+    char *arquivo_entrada = argv[1];
+    char *arquivo_saida = argv[2];
+
+    FILE *in_file = fopen(arquivo_entrada, "r");
+    if (!in_file) {
+        perror("Erro ao abrir o arquivo de entrada");
+        return 1;
+    }
+
+    FILE *out_file = fopen(arquivo_saida, "w");
+    if (!out_file) {
+        perror("Erro ao abrir o arquivo de saída");
+        fclose(in_file);
         return 1;
     }
 
     int source;
-    fscanf(file, "node_%d\n", &source);
+    fscanf(in_file, "node_%d\n", &source);
 
     int num_vertices = 0;
     char linha[256];
-    while (fgets(linha, sizeof(linha), file)) {
+    while (fgets(linha, sizeof(linha), in_file)) {
         num_vertices++;
     }
 
-    rewind(file);
-    fscanf(file, "node_%d\n", &source);
+    rewind(in_file);
+    fscanf(in_file, "node_%d\n", &source);
 
     Graph *graph = createGraph(num_vertices);
 
     for (int i = 0; i < num_vertices; i++) {
         int v;
-        float w1, w2, w3, w4;
-        fscanf(file, "node_%d, %f, %f, %f, %f\n", &v, &w1, &w2, &w3, &w4);
+        fscanf(in_file, "node_%d", &v);
 
         for (int j = 0; j < num_vertices; j++) {
             if (i != j) {
-                float weight = (j == 0) ? w1 : (j == 1) ? w2 : (j == 2) ? w3 : w4;
-                if (weight > 0) {
-                    addEdge(graph, i, j, weight);
+                float weight;
+                if(fscanf(in_file, ", %f", &weight) == 0){
+                    fscanf(in_file, ", bomba");
+                    weight = 0.0;
                 }
+                if (weight > 0) addEdge(graph, i, j, weight);
             }
         }
+        fscanf(in_file, "\n");
     }
 
-    fclose(file);
+    fclose(in_file);
 
-    dijkstra(graph, source);
+    dijkstra(graph, source, out_file);
 
+    fclose(out_file);
     freeGraph(graph);
 
     return 0;
 }
-
-/*
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <float.h>
-
-#define MAX_NODES 100
-
-typedef struct {
-    int node;
-    float weight;
-} Edge;
-
-typedef struct {
-    Edge edges[MAX_NODES];
-    int edge_count;
-} Node;
-
-Node graph[MAX_NODES];
-float distances[MAX_NODES];
-int previous[MAX_NODES];
-int visited[MAX_NODES];
-int num_nodes;
-
-void initialize_graph(int nodes) {
-    num_nodes = nodes;
-    for (int i = 0; i < num_nodes; i++) {
-        graph[i].edge_count = 0;
-        distances[i] = FLT_MAX;
-        previous[i] = -1;
-        visited[i] = 0;
-    }
-}
-
-void add_edge(int src, int dest, float weight) {
-    graph[src].edges[graph[src].edge_count].node = dest;
-    graph[src].edges[graph[src].edge_count].weight = weight;
-    graph[src].edge_count++;
-}
-
-int extract_min() {
-    int min_index = -1;
-    float min_distance = FLT_MAX;
-
-    for (int i = 0; i < num_nodes; i++) {
-        if (!visited[i] && distances[i] < min_distance) {
-            min_distance = distances[i];
-            min_index = i;
-        }
-    }
-
-    return min_index;
-}
-
-void dijkstra(int start) {
-    distances[start] = 0;
-
-    for (int i = 0; i < num_nodes; i++) {
-        int u = extract_min();
-        if (u == -1) break;
-
-        visited[u] = 1;
-
-        for (int j = 0; j < graph[u].edge_count; j++) {
-            int v = graph[u].edges[j].node;
-            float weight = graph[u].edges[j].weight;
-
-            if (!visited[v] && distances[u] + weight < distances[v]) {
-                distances[v] = distances[u] + weight;
-                previous[v] = u;
-            }
-        }
-    }
-}
-
-void print_path(int node, FILE *output) {
-    if (node == -1) return;
-    print_path(previous[node], output);
-    fprintf(output, "node_%d ", node);
-}
-
-void read_input(const char *filename, int *start_node) {
-    FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Erro ao abrir o arquivo de entrada");
-        exit(EXIT_FAILURE);
-    }
-
-    fscanf(file, "%d", start_node);
-
-    int i = 0;
-    while (fscanf(file, "node_%*d") != EOF) {
-        for (int j = 0; j < num_nodes; j++) {
-            float weight;
-            fscanf(file, ",%f", &weight);
-            if (weight > 0) {
-                add_edge(i, j, weight);
-            }
-        }
-        i++;
-    }
-
-    fclose(file);
-}
-
-void write_output(const char *filename, int start_node) {
-    FILE *file = fopen(filename, "w");
-    if (!file) {
-        perror("Erro ao abrir o arquivo de saída");
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < num_nodes; i++) {
-        if (i != start_node) {
-            fprintf(file, "SHORTEST PATH TO node_%d: ", i);
-            print_path(i, file);
-            fprintf(file, "(Distance: %.2f)\n", distances[i]);
-        }
-    }
-
-    fclose(file);
-}
-
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        fprintf(stderr, "Uso: %s <arquivo_entrada> <arquivo_saida>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
-
-    int start_node;
-
-    FILE *input_file = fopen(argv[1], "r");
-    if (!input_file) {
-        perror("Erro ao abrir o arquivo de entrada");
-        return EXIT_FAILURE;
-    }
-
-    fscanf(input_file, "%d", &num_nodes);
-    fclose(input_file);
-
-    initialize_graph(num_nodes);
-    read_input(argv[1], &start_node);
-    dijkstra(start_node);
-    write_output(argv[2], start_node);
-
-    return EXIT_SUCCESS;
-}
-
-*/
