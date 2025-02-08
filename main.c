@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <math.h>
 
 struct item {
     int node;
@@ -57,7 +58,7 @@ void printPath(int node, int *predecessor, FILE *out_file) {
     printPath(predecessor[node], predecessor, out_file);
 }
 
-// Algoritmo de Dijkstra ajustado
+// Algoritmo de Dijkstra
 void dijkstra(Graph *graph, int source, FILE *out_file) {
     float *distances = malloc(graph->num_vertices * sizeof(float));
     int *visited = calloc(graph->num_vertices, sizeof(int));
@@ -71,7 +72,8 @@ void dijkstra(Graph *graph, int source, FILE *out_file) {
     distances[source] = 0.0;
 
     // Criar fila de prioridade
-    PQ *pq = PQ_create(graph->num_vertices);
+    PQ *pq = PQ_create((int)pow(graph->num_vertices, 2));
+    //PQ *pq = PQ_create(graph->num_vertices);
 
     Item *first = malloc(sizeof(Item));
     first->distance = 0.0;
@@ -160,9 +162,9 @@ int main(int argc, char *argv[]) {
     fscanf(in_file, "node_%d\n", &source);
 
     int num_vertices = 0;
-    char linha[256];
+    char linha[65536];
     while (fgets(linha, sizeof(linha), in_file)) {
-        num_vertices++;
+        if (strlen(linha) > 1) num_vertices++;
     }
 
     rewind(in_file);
@@ -176,14 +178,13 @@ int main(int argc, char *argv[]) {
 
         for (int j = 0; j < num_vertices; j++) {
             if (i != j) {
-                float weight;
-                if(fscanf(in_file, ", %f", &weight) == 0){
-                    fscanf(in_file, ", bomba");
-                    weight = 0.0;
-                }
+                float weight = 0.0;
+                fscanf(in_file, ", %f", &weight);
+                fscanf(in_file, "%*[^,\n]");
                 if (weight > 0) addEdge(graph, i, j, weight);
             }
         }
+
         fscanf(in_file, "\n");
     }
 

@@ -12,7 +12,7 @@ EXEC = trab1
 
 # Regra para compilar o programa
 $(EXEC): $(OBJ)
-	$(CC) $(OBJ) -o $(EXEC)
+	$(CC) $(OBJ) -o $(EXEC) -lm
 
 # Regra para compilar main.c
 main.o: main.c

@@ -79,10 +79,13 @@ void PQ_destroy(PQ *pq) {
 void PQ_insert(PQ *pq, Item *e) {
     if(pq->size >= pq->max){
         perror("Deu ruim na insert\n");
+        printf("tam: %d\n", pq->size);
+        printf("max: %d\n", pq->max);
         exit(1);
     }
     pq->items[++pq->size] = e;
     fix_up(pq, pq->size);
+    printf("Inserted node %d with distance %.2f\n", e->node, e->distance);
 }
 
 /*
@@ -94,6 +97,7 @@ Item* PQ_delmin(PQ *pq) {
     exch(&pq->items[1], &pq->items[pq->size]);
     pq->size--;
     fix_down(pq, 1);
+    printf("Removed node %d with distance %.2f\n", min->node, min->distance);
     return min;
 }
 
