@@ -84,10 +84,10 @@ void setArestaList(tNo *no, tAresta *aresta)
     no->aresta_list = aresta;
 }
 
-tNo *fazListaSemFinalizados(tNo *primeiro)
-{
-    tNo *novaLista = NULL;
-}
+// tNo *fazListaSemFinalizados(tNo *primeiro)
+// {
+//     tNo *novaLista = NULL;
+// }
 
 void insertionSortNos(tNo **ArrayDeNos, int numero_de_vertices)
 {

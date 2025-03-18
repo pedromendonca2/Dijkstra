@@ -2,15 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "djikstra.h"
-#include <time.h>
 
 int main(int argc, char *argv[]) {
-
-    clock_t inicio, fim;
-    double tempo_execucao;
-
-    inicio = clock();
-
 
     if (argc < 3) {
         printf("Uso: %s <arquivo de entrada> <arquivo de saída>\n", argv[0]);
@@ -70,10 +63,7 @@ int main(int argc, char *argv[]) {
     fclose(out_file);
     freeGraph(graph);
 
-    fim = clock();
 
-    tempo_execucao = ((double)(fim-inicio)/ CLOCKS_PER_SEC);
-    printf("Tempo de execução: %f segundos\n",tempo_execucao);
 
     return 0;
 }

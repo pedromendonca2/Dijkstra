@@ -35,4 +35,4 @@ run:
 	./trab1 casos_teste_v3/caso_teste_medio_1.txt output.txt
 
 run2:
-	./trab2 casos_teste_v3/caso_teste_medio_1.txt output2.txt
+	./trab2 casos_teste_v3/caso_teste_pequeno_1.txt output2.txt

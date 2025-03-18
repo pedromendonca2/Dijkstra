@@ -85,7 +85,7 @@ void PQ_insert(PQ *pq, Item *e) {
     }
     pq->items[++pq->size] = e;
     fix_up(pq, pq->size);
-    printf("Inserted node %d with distance %.2f\n", e->node, e->distance);
+    // printf("Inserted node %d with distance %.2f\n", e->node, e->distance);
 }
 
 /*
@@ -97,7 +97,7 @@ Item* PQ_delmin(PQ *pq) {
     exch(&pq->items[1], &pq->items[pq->size]);
     pq->size--;
     fix_down(pq, 1);
-    printf("Removed node %d with distance %.2f\n", min->node, min->distance);
+    // printf("Removed node %d with distance %.2f\n", min->node, min->distance);
     return min;
 }
 

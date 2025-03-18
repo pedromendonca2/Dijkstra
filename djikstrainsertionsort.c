@@ -42,7 +42,7 @@ void djikstraComInsertionSort(char **argv, int argc)
         ---------------------------------------------------------
     */
 
-    char leitura[65536], letra;
+    char leitura[65536];
     int numero_de_vertices = 0, origem, i = 0, j = 0;
     float aux2;
 
