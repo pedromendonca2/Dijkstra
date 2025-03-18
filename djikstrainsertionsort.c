@@ -8,10 +8,7 @@
 
 void djikstraComInsertionSort(char **argv, int argc)
 {
-    /*
-        Abre os arquivos de input e output
-    */
-
+    
     if (argc < 3)
     {
         printf("Uso: %s <arquivo de entrada> <arquivo de saída>\n", argv[0]);
