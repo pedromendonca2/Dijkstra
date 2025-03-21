@@ -1,3 +1,6 @@
+/*
+    Autores: Pedro Henrique Mendonça, Pedro Sodré, Pedro Marquesini
+*/
 #include "PQ.h" //
 
 struct item {

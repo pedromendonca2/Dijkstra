@@ -1,3 +1,6 @@
+/*
+    Autores: Pedro Henrique Mendonça, Pedro Sodré, Pedro Marquesini
+*/
 #ifndef DJIKSTRAINSERTIONSORT_H
 #define DJIKSTRAINSERTIONSORT_H
 

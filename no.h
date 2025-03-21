@@ -1,3 +1,7 @@
+/*
+    Autores: Pedro Henrique Mendonça, Pedro Sodré, Pedro Marquesini
+*/
+
 #ifndef NO_H
 #define NO_H
 

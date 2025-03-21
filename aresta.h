@@ -1,3 +1,6 @@
+/*
+    Autores: Pedro Henrique Mendonça, Pedro Sodré, Pedro Marquesini
+*/
 #ifndef ARESTA_H
 #define ARESTA_H
 

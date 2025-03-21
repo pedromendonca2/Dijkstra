@@ -1,3 +1,6 @@
+/*
+    Autores: Pedro Henrique Mendonça, Pedro Sodré, Pedro Marquesini
+*/
 #include "djikstra.h"
 #include <stdio.h>
 #include <stdlib.h>

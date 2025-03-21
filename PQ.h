@@ -1,3 +1,6 @@
+/*
+    Autores: Pedro Henrique Mendonça, Pedro Sodré, Pedro Marquesini
+*/
 #ifndef PQ_H
 #define PQ_H
 
